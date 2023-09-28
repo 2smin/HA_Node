@@ -1,18 +1,24 @@
 import bootstraps.ExternalBootstrap;
-import io.netty.channel.local.LocalChannel;
 import master.Master;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
-        Master master = Master.Holder.INSTANCE;
-        master.init();
+        try{
 
-        //TODO : init bootstrapManager to manage all bootstraps, and put boot in to manager
-        ExternalBootstrap externalBootstrap = new ExternalBootstrap(master.getMasterLocalChannel());
-        externalBootstrap.initBootstrap();
+            Master master = Master.Holder.INSTANCE;
+            master.init();
 
+            //TODO : init bootstrapManager to manage all bootstraps, and put boot in to manager
+            ExternalBootstrap externalBootstrap = new ExternalBootstrap();
+            externalBootstrap.initBootstrap();
+            externalBootstrap.connectToMaster();
+
+        }catch (InterruptedException e){
+            e.printStackTrace();
+            System.out.println("error occurred while initializing master and httpBootstraps");
+        }
 
     }
 }

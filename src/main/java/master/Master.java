@@ -1,7 +1,11 @@
 package master;
 
-import io.netty.channel.EventLoopGroup;
+import enums.Constants;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.local.LocalAddress;
 import io.netty.channel.local.LocalChannel;
+import io.netty.channel.local.LocalServerChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 
 public class Master {
@@ -15,13 +19,28 @@ public class Master {
     }
 
     private EventLoopGroup masterEventLoopGroup;
+    private ServerBootstrap masterServerBootstrap;
     private LocalChannel masterLocalChannel;
-    public void init(){
+    public void init() throws InterruptedException{
         masterEventLoopGroup = new NioEventLoopGroup(10);
-        masterLocalChannel = new LocalChannel();
-        masterEventLoopGroup.register(masterLocalChannel);
+        masterServerBootstrap = new ServerBootstrap();
+        masterServerBootstrap.group(masterEventLoopGroup);
+        masterServerBootstrap.channel(LocalServerChannel.class);
+        registerHandlers();
+        masterServerBootstrap.bind(new LocalAddress(Constants.MASTER_LOCAL_SERVER)).sync();
+    }
 
-        //TODO : bind masterLocalChannel to ExternalBootstrap
+    public void registerHandlers(){
+        masterServerBootstrap.childHandler(
+                new ChannelInitializer<>() {
+                    @Override
+                    protected void initChannel(Channel ch) throws Exception {
+                        ChannelPipeline pipeline = ch.pipeline();
+                        pipeline.addLast(new MasterRequestHandler());
+                        System.out.println("MasterBoostrap received connection from " + ch.remoteAddress());
+                    }
+                }
+        );
     }
 
     public EventLoopGroup getMasterEventLoopGroup(){
