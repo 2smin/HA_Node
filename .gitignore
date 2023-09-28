@@ -7,10 +7,11 @@
 /dataSources/
 /dataSources.local.xml
 
-./build/
-./out/
-./.idea/
-./.gradle/
-.gradlew
+/build/
+/out/
+.idea/
+.gradle/
+/gradle/
+gradlew
 gradlew.bat
 ```
