@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import repository.RateLimitConfig;
 
 public class ExternalBootstrap {
 
@@ -38,7 +39,7 @@ public class ExternalBootstrap {
                         pipeline.addLast(new HttpServerCodec());
                         pipeline.addLast(new HttpObjectAggregator(65536));
                         pipeline.addLast(new HttpContentCompressor());
-
+                        pipeline.addLast(new RateLimitHandler(new RateLimitConfig()));
                         pipeline.addLast(new SimpleHttpRequestHandler(localChannelToMaster));
 
                     }

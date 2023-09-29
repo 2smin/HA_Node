@@ -3,7 +3,7 @@ package bootstraps;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.local.LocalChannel;
-import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.*;
 import org.apache.logging.log4j.Logger;
 
 public class SimpleHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
@@ -23,5 +23,14 @@ public class SimpleHttpRequestHandler extends SimpleChannelInboundHandler<FullHt
         System.out.println("simple http request received...");
 
         masterEventManagerChannel.writeAndFlush(msg);
+
+        //Simple httpResponse
+        FullHttpResponse httpResponse = new DefaultFullHttpResponse(
+                HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        httpResponse.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/plain");
+        httpResponse.headers().add(HttpHeaders.Names.CONTENT_LENGTH, "hello world".getBytes().length);
+        httpResponse.content().writeBytes("hello world".getBytes());
+
+        ctx.writeAndFlush(httpResponse);
     }
 }
