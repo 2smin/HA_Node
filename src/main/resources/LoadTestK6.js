@@ -6,10 +6,11 @@ export default function () {
         headers: {
             'Content-Type': 'application/json',
             'User-Agent': 'k6',
+            'apiKey' : "aaabbb"
         },
         http1: true, // HTTP 1.1 프로토콜 사용
     };
-    const httpRes = http.get('http://localhost:8080/');
+    const httpRes = http.get('http://localhost:8080/', params);
 
 }
 

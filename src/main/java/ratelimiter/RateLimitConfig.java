@@ -1,4 +1,4 @@
-package repository;
+package ratelimiter;
 
 import java.util.concurrent.TimeUnit;
 
@@ -7,6 +7,12 @@ public class RateLimitConfig {
     private int tokens;
     private TimeUnit timeUnit;
     private int capacity;
+
+    public RateLimitConfig(int tokens, TimeUnit timeUnit, int capacity) {
+        this.tokens = tokens;
+        this.timeUnit = timeUnit;
+        this.capacity = capacity;
+    }
 
     public int getTokens() {
         return tokens;
