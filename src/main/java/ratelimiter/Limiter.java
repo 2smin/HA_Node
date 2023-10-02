@@ -4,10 +4,14 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 
 public class Limiter {
+
+    private static Logger logger = LogManager.getLogger(Limiter.class.getName());
 
     private Limiter() {}
     private Bucket bucket;
@@ -17,7 +21,7 @@ public class Limiter {
         int capacity = 0;
         String timeUnit = null;
 
-        System.out.println("rate limit handler created");
+        logger.info("create new limiter");
         try{
             tokens = config.getTokens() != 0 ? config.getTokens() : 10;
             capacity = config.getCapacity() != 0 ? config.getCapacity() : 10;
@@ -51,7 +55,7 @@ public class Limiter {
     }
 
     protected boolean tryConsume(int tokens){
-        System.out.println("try consume");
+        logger.info("try consume");
         return this.bucket.tryConsume(tokens);
     }
 

@@ -4,10 +4,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.local.LocalChannel;
 import io.netty.handler.codec.http.*;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SimpleHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
+    private static Logger logger = LogManager.getLogger(SimpleHttpRequestHandler.class.getName());
     private LocalChannel masterEventManagerChannel;
 
     public SimpleHttpRequestHandler(LocalChannel masterEventManagerChannel) {
@@ -20,7 +22,7 @@ public class SimpleHttpRequestHandler extends SimpleChannelInboundHandler<FullHt
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
 
         //TODO simpley send httpRequest to masterEventManagerChannel
-        System.out.println("simple http request received...");
+        logger.info("simple http request received...");
 
         masterEventManagerChannel.writeAndFlush(msg);
 

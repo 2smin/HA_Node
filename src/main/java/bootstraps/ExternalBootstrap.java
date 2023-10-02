@@ -10,10 +10,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ratelimiter.RateLimitConfig;
 
 public class ExternalBootstrap {
 
+    private static Logger logger = LogManager.getLogger(ExternalBootstrap.class.getName());
     private EventLoopGroup httpEventLoopGroup;
     private ServerBootstrap serverBootstrap;
     private LocalChannel localChannelToMaster;
@@ -52,7 +55,7 @@ public class ExternalBootstrap {
         localChannelToMaster.connect(new LocalAddress(Constants.MASTER_LOCAL_SERVER)).addListener(
                 (ChannelFutureListener) future -> {
                     if(future.isSuccess()){
-                        System.out.println("connect to master complete");
+                        logger.info("connected to master");
                     }
                 }
         );

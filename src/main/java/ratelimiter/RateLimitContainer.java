@@ -1,5 +1,7 @@
 package ratelimiter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sync.Action;
 import sync.SyncController;
 
@@ -8,8 +10,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+
+
 public class RateLimitContainer extends SyncController {
 
+    private static Logger logger = LogManager.getLogger(RateLimitContainer.class.getName());
     private RateLimitContainer() {}
 
     private static RateLimitContainer instance = new RateLimitContainer();
@@ -39,7 +44,7 @@ public class RateLimitContainer extends SyncController {
         if(ratelimiters.containsKey(apiKey)){
             return;
         }else{
-            System.out.println("create new ratelimiter : " + apiKey);
+            logger.info("create new ratelimiter : " + apiKey);
             if(config==null) config = new RateLimitConfig(10, TimeUnit.SECONDS,10);
             Limiter limiter = new Limiter(config);
             ratelimiters.put(apiKey,limiter);
