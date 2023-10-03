@@ -1,9 +1,8 @@
 import bootstraps.ExternalBootstrap;
 
-import master.Master;
+import enums.Constants;
+import master.MainBootstrap;
 
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Logger;
 
 public class Main {
@@ -13,9 +12,13 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
 
         try{
-
-            Master master = Master.Holder.INSTANCE;
+            MainBootstrap master = MainBootstrap.Holder.INSTANCE;
             master.init();
+            if(Constants.NODE_TYPE.equals("master")){
+                master.asMasterConfigServer();
+            }else{
+                master.asWorkerNode();
+            }
 
             //TODO : init bootstrapManager to manage all bootstraps, and put boot in to manager
             ExternalBootstrap externalBootstrap = new ExternalBootstrap();

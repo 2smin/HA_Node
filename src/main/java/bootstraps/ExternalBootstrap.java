@@ -12,7 +12,6 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ratelimiter.RateLimitConfig;
 
 public class ExternalBootstrap {
 
@@ -52,7 +51,7 @@ public class ExternalBootstrap {
     public void connectToMaster(){
         this.localChannelToMaster = new LocalChannel();
         httpEventLoopGroup.register(localChannelToMaster);
-        localChannelToMaster.connect(new LocalAddress(Constants.MASTER_LOCAL_SERVER)).addListener(
+        localChannelToMaster.connect(new LocalAddress(Constants.MAIN_LOCAL_BOOTSTRAP)).addListener(
                 (ChannelFutureListener) future -> {
                     if(future.isSuccess()){
                         logger.info("connected to master");

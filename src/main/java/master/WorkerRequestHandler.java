@@ -5,13 +5,12 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ratelimiter.Limiter;
 
 import java.util.Map;
 
-public class MasterRequestHandler extends ChannelInboundHandlerAdapter {
+public class WorkerRequestHandler extends ChannelInboundHandlerAdapter {
 
-    private static Logger logger = LogManager.getLogger(MasterRequestHandler.class.getName());
+    private static Logger logger = LogManager.getLogger(WorkerRequestHandler.class.getName());
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
