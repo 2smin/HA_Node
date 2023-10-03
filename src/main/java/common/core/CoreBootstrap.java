@@ -1,6 +1,8 @@
-package master;
+package common.core;
 
-import enums.Constants;
+import common.core.master.MasterControlServerHandler;
+import common.core.worker.WorkerRequestHandler;
+import common.enums.Constants;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.local.LocalAddress;
@@ -10,14 +12,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class MainBootstrap {
+public class CoreBootstrap {
 
-    private static Logger logger = LogManager.getLogger(MainBootstrap.class.getName());
-    private MainBootstrap() {}
+    private static Logger logger = LogManager.getLogger(CoreBootstrap.class.getName());
+    private CoreBootstrap() {}
     public static class Holder {
-        public static final MainBootstrap INSTANCE = new MainBootstrap();
+        public static final CoreBootstrap INSTANCE = new CoreBootstrap();
     }
-    public MainBootstrap getInstance(){
+    public CoreBootstrap getInstance(){
         return Holder.INSTANCE;
     }
 
@@ -36,7 +38,7 @@ public class MainBootstrap {
     * This method will initialize the node as master configuration server
     * Master Config Server hadle synchronize, failover of all worker nodes
      **/
-    public void asMasterConfigServer(){
+    public void asMasterConfigServer()throws InterruptedException {
         masterServerBootstrap.childHandler(
                 new ChannelInitializer<>() {
                     @Override
@@ -47,13 +49,14 @@ public class MainBootstrap {
                     }
                 }
         );
+        bind();
     }
 
     /**
      * This method will initialize the node as worker node
      * Worker node will handle all the requests from external, and send events to master config server
      */
-    public void asWorkerNode(){
+    public void asWorkerNode() throws InterruptedException{
         masterServerBootstrap.childHandler(
                 new ChannelInitializer<>() {
                     @Override
@@ -64,6 +67,7 @@ public class MainBootstrap {
                     }
                 }
         );
+        bind();
     }
 
     private void bind() throws InterruptedException{

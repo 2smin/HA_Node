@@ -1,6 +1,6 @@
-package bootstraps;
+package worker.bootstraps;
 
-import enums.Constants;
+import common.enums.Constants;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.local.LocalAddress;
@@ -18,7 +18,7 @@ public class ExternalBootstrap {
     private static Logger logger = LogManager.getLogger(ExternalBootstrap.class.getName());
     private EventLoopGroup httpEventLoopGroup;
     private ServerBootstrap serverBootstrap;
-    private LocalChannel localChannelToMaster;
+    private LocalChannel localChannelToCore;
 
     public void initBootstrap() throws InterruptedException {
         httpEventLoopGroup = new NioEventLoopGroup(1);
@@ -41,17 +41,17 @@ public class ExternalBootstrap {
                         pipeline.addLast(new HttpObjectAggregator(65536));
                         pipeline.addLast(new HttpContentCompressor());
                         pipeline.addLast(new RateLimitHandler());
-                        pipeline.addLast(new SimpleHttpRequestHandler(localChannelToMaster));
+                        pipeline.addLast(new SimpleHttpRequestHandler(localChannelToCore));
 
                     }
                 }
         );
     }
 
-    public void connectToMaster(){
-        this.localChannelToMaster = new LocalChannel();
-        httpEventLoopGroup.register(localChannelToMaster);
-        localChannelToMaster.connect(new LocalAddress(Constants.MAIN_LOCAL_BOOTSTRAP)).addListener(
+    public void connectToCore(){
+        this.localChannelToCore = new LocalChannel();
+        httpEventLoopGroup.register(localChannelToCore);
+        localChannelToCore.connect(new LocalAddress(Constants.MAIN_LOCAL_BOOTSTRAP)).addListener(
                 (ChannelFutureListener) future -> {
                     if(future.isSuccess()){
                         logger.info("connected to master");

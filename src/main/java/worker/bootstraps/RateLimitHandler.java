@@ -1,15 +1,12 @@
-package bootstraps;
+package worker.bootstraps;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ratelimiter.Limiter;
-import ratelimiter.RateLimitConfig;
-import ratelimiter.RateLimitContainer;
+import worker.ratelimiter.RateLimitContainer;
 
 
 public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpRequest> {

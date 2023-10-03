@@ -1,4 +1,4 @@
-package ratelimiter;
+package worker.ratelimiter;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;

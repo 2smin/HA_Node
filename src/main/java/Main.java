@@ -1,7 +1,8 @@
-import bootstraps.ExternalBootstrap;
+import common.sync.NodeSyncBootstrap;
+import worker.bootstraps.ExternalBootstrap;
 
-import enums.Constants;
-import master.MainBootstrap;
+import common.enums.Constants;
+import common.core.CoreBootstrap;
 
 import java.util.logging.Logger;
 
@@ -12,18 +13,21 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
 
         try{
-            MainBootstrap master = MainBootstrap.Holder.INSTANCE;
+            CoreBootstrap master = CoreBootstrap.Holder.INSTANCE;
             master.init();
-            if(Constants.NODE_TYPE.equals("master")){
+            if(Constants.NODE_TYPE.equals("common/core")){
                 master.asMasterConfigServer();
             }else{
                 master.asWorkerNode();
             }
 
+            NodeSyncBootstrap nodeSync = NodeSyncBootstrap.getInstance();
+            nodeSync.init();
+
             //TODO : init bootstrapManager to manage all bootstraps, and put boot in to manager
             ExternalBootstrap externalBootstrap = new ExternalBootstrap();
             externalBootstrap.initBootstrap();
-            externalBootstrap.connectToMaster();
+            externalBootstrap.connectToCore();
 
         }catch (InterruptedException e){
             e.printStackTrace();

@@ -1,4 +1,4 @@
-package master;
+package common.core.worker;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

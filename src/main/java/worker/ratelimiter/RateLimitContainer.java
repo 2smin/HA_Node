@@ -1,9 +1,9 @@
-package ratelimiter;
+package worker.ratelimiter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sync.Action;
-import sync.SyncElements;
+import common.sync.Action;
+import common.sync.SyncElements;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package bootstraps;
+package worker.bootstraps;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -10,10 +10,10 @@ import org.apache.logging.log4j.Logger;
 public class SimpleHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private static Logger logger = LogManager.getLogger(SimpleHttpRequestHandler.class.getName());
-    private LocalChannel masterEventManagerChannel;
+    private LocalChannel localChannelToCore;
 
-    public SimpleHttpRequestHandler(LocalChannel masterEventManagerChannel) {
-        this.masterEventManagerChannel = masterEventManagerChannel;
+    public SimpleHttpRequestHandler(LocalChannel localChannelToCore) {
+        this.localChannelToCore = localChannelToCore;
     }
 
     //TODO : send channel registerd event to masterEventManagerChannel, and sync with otehr nodes.
@@ -24,7 +24,7 @@ public class SimpleHttpRequestHandler extends SimpleChannelInboundHandler<FullHt
         //TODO simpley send httpRequest to masterEventManagerChannel
         logger.info("simple http request received...");
 
-        masterEventManagerChannel.writeAndFlush(msg);
+        localChannelToCore.writeAndFlush(msg);
 
         //Simple httpResponse
         FullHttpResponse httpResponse = new DefaultFullHttpResponse(
