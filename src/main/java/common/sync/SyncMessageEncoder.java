@@ -1,20 +1,19 @@
 package common.sync;
 
-import common.core.worker.WorkerGlobal;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.buffer.UnpooledHeapByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SyncMessageEncoder extends MessageToByteEncoder<SyncMessageDto> {
 
     private static Logger logger = LogManager.getLogger(SyncMessageEncoder.class.getName());
+
     @Override
     protected void encode(ChannelHandlerContext ctx, SyncMessageDto msg, ByteBuf out) throws Exception {
-
         /*
         generate byteBuffer with fixed size
             workerID : 16byte
@@ -25,37 +24,40 @@ public class SyncMessageEncoder extends MessageToByteEncoder<SyncMessageDto> {
             action : 10byte
             actionKey : unfixed.
          */
-
-        ByteBuf buf = Unpooled.buffer();
-
+        logger.info("SyncMessageEncoder encode called");
         try{
-            byte[] workerId = getBytes(msg.getWorkerId(), 16);
-            buf.writeBytes(workerId);
+            byte[] workerId = parseByteBuf2Dto(msg.getWorkerId(), 16);
+            out.writeBytes(workerId);
 
-            byte[] action = getBytes(msg.getAction().toString(), 10);
-            buf.writeBytes(action);
+            byte[] syncElement = parseByteBuf2Dto(msg.getSyncElement().toString(), 16);
+            out.writeBytes(syncElement);
 
-            byte[] actionKey = getBytes(msg.getActionKey(), 0);
-            buf.writeBytes(actionKey);
+            byte[] action = parseByteBuf2Dto(msg.getAction().toString(), 10);
+            out.writeBytes(action);
 
-            ctx.writeAndFlush(buf);
+            byte[] actionKey = parseByteBuf2Dto(msg.getActionKey(), 0);
+            out.writeBytes(actionKey);
+
+            logger.info("SyncMessageEncoder encode finished");
+            logger.info(out.readableBytes());
         }catch (Exception e){
-            logger.error("Exception occurred while encoding SyncMessageDto : ", e.getMessage());
+            logger.error("Exception occurred while encoding SyncMessageDto ");
         }
 
     }
 
-    private byte[] getBytes(String str, int size) {
+    private byte[] parseByteBuf2Dto(String str, int size) {
         byte[] bytes = null;
-
-        if(size == 0){
+        if(!StringUtils.isNotEmpty(str)) {
+            bytes = new byte[size];
+        }else if(size == 0){
             bytes = str.getBytes();
         }else {
             bytes = new byte[size];
             for (int i = 0; i < size; i++) {
                 bytes[i] = 0;
             }
-            byte[] strBytes = str.getBytes();
+            byte[] strBytes = StringUtils.isNotEmpty(str) ? str.getBytes() : new byte[size];
             if (strBytes.length < size) {
                 System.arraycopy(strBytes, 0, bytes, 0, strBytes.length);
             } else {

@@ -31,7 +31,6 @@ public class CoreBootstrap {
         masterServerBootstrap = new ServerBootstrap();
         masterServerBootstrap.group(masterEventLoopGroup);
         masterServerBootstrap.channel(LocalServerChannel.class);
-        asMasterConfigServer();
     }
 
     /**
@@ -74,8 +73,13 @@ public class CoreBootstrap {
         bind();
     }
 
-    private void bind() throws InterruptedException{
-        masterServerBootstrap.bind(new LocalAddress(Constants.MAIN_LOCAL_BOOTSTRAP)).sync();
+    private void bind() {
+        try{
+            masterServerBootstrap.bind(new LocalAddress(Constants.MAIN_LOCAL_BOOTSTRAP)).sync();
+        }catch (InterruptedException e){
+            logger.error("Error while binding master configuration server", e);
+            throw new RuntimeException(e);
+        }
     }
 
     public EventLoopGroup getMasterEventLoopGroup(){

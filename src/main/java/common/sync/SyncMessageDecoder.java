@@ -41,7 +41,7 @@ public class SyncMessageDecoder extends ByteToMessageDecoder {
             }
 
             syncMessageDto.setWorkerId(workerId);
-            syncMessageDto.setSyncElement(new Constants.SyncElement().valueOf(syncElement));
+            syncMessageDto.setSyncElement(Constants.SyncElement.valueOf(syncElement));
             syncMessageDto.setAction(Action.valueOf(action));
             syncMessageDto.setActionKey(StringUtils.isNoneEmpty(actionKey) ? actionKey : null);
 

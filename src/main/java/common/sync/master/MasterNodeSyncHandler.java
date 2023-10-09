@@ -1,6 +1,7 @@
 package common.sync.master;
 
 import common.core.master.MasterGlobal;
+import common.enums.Constants;
 import common.sync.Action;
 import common.sync.SyncMessageDto;
 import io.netty.channel.ChannelDuplexHandler;
@@ -29,7 +30,9 @@ public class MasterNodeSyncHandler extends ChannelDuplexHandler {
         int port = socketAddress.getPort();
 
         String workerAddress = host + ":" + port;
-        logger.info("master node sync handler channel active, worker address : " + workerAddress);
+        logger.info("master node sync handler channel active, worker address : ");
+        logger.info(workerAddress);
+        System.out.println(workerAddress);
 
         MasterGlobal.getInstance().addWorkerChannel(workerAddress, ctx.channel());
 
@@ -50,6 +53,7 @@ public class MasterNodeSyncHandler extends ChannelDuplexHandler {
         SyncMessageDto syncMessageDto = new SyncMessageDto();
         syncMessageDto.setAction(Action.INITIALIZE);
         syncMessageDto.setWorkerId(workerID);
+        syncMessageDto.setSyncElement(Constants.SyncElement.BOOTSTRAP);
 
         //FIXME : syncElement : global?? do we need ?
 
