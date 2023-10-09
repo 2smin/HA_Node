@@ -7,5 +7,6 @@ public enum Action {
     ADD,
     DELETE,
     UPDATE,
+    INITIALIZE;
 
 }

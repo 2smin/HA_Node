@@ -3,7 +3,7 @@ package worker.ratelimiter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import common.sync.Action;
-import common.sync.SyncElements;
+import common.sync.Synchronizer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 
 
-public class RateLimitContainer extends SyncElements {
+public class RateLimitContainer extends Synchronizer {
 
     private static Logger logger = LogManager.getLogger(RateLimitContainer.class.getName());
     private RateLimitContainer() {}

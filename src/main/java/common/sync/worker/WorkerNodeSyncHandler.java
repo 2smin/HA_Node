@@ -24,6 +24,7 @@ public class WorkerNodeSyncHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        //TODO : handle sync message which has been parsed by decoder
         logger.info("worker node sync handler received message from master config server");
         localChannelToCore.writeAndFlush(msg);
     }

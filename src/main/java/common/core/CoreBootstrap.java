@@ -64,6 +64,10 @@ public class CoreBootstrap {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new WorkerRequestHandler());
                         logger.info("Node initialized with worker");
+
+                        // set Handler differently for each client (http, sync), distinguish by channelAttr ? or by port?
+
+
                     }
                 }
         );
