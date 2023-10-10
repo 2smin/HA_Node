@@ -1,5 +1,8 @@
 package common.sync.worker;
 
+import common.core.worker.WorkerGlobal;
+import common.sync.Action;
+import common.sync.SyncMessageDto;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -22,10 +25,28 @@ public class WorkerNodeSyncHandler extends ChannelDuplexHandler {
         ctx.writeAndFlush(msg);
     }
 
+
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        //TODO : handle sync message which has been parsed by decoder
         logger.info("worker node sync handler received message from master config server");
+
+        SyncMessageDto syncMessageDto = (SyncMessageDto) msg;
+        Action action = syncMessageDto.getAction();
+
+        //TODO : handle actions
+        switch (action){
+            case INITIALIZE:
+                WorkerGlobal.getInstance().registerWorkerId(syncMessageDto.getWorkerId());
+                break;
+            case ADD:
+                break;
+            case DELETE:
+                break;
+            case UPDATE:
+                break;
+        }
+
         localChannelToCore.writeAndFlush(msg);
     }
 }

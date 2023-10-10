@@ -25,15 +25,15 @@ public class SyncMessageDecoder extends ByteToMessageDecoder {
         logger.info("syncMessage byteBuf readableBytes : {}", readableByte);
 
         //minimal byteBuf length = 42bytes (without actionkey)
-
+        //TODO : use json or protobuf someday... remove fixed length
         if(readableByte < 42){
             logger.error("syncMessage byteBuf readableBytes should be longer than 42bytes");
             return;
         }else{
-            String workerId = (String) in.readCharSequence(16, StandardCharsets.UTF_8);
-            String syncElement = (String) in.readCharSequence(16, StandardCharsets.UTF_8);
-            String action = (String) in.readCharSequence(10, StandardCharsets.UTF_8);
-            String actionKey = (String) in.readCharSequence(readableByte - 42, StandardCharsets.UTF_8);
+            String workerId = in.readCharSequence(16, StandardCharsets.UTF_8).toString().trim();
+            String syncElement = in.readCharSequence(16, StandardCharsets.UTF_8).toString().trim();
+            String action = in.readCharSequence(10, StandardCharsets.UTF_8).toString().trim();
+            String actionKey = in.readCharSequence(readableByte - 42, StandardCharsets.UTF_8).toString().trim();
 
             if(!StringUtils.isNoneEmpty(workerId, syncElement, action)){
                 logger.error("syncMessage byteBuf should have workerId, syncElement, action");
@@ -53,6 +53,6 @@ public class SyncMessageDecoder extends ByteToMessageDecoder {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-
+        logger.error("syncMessage decoder exception : {}", cause.getMessage());
     }
 }

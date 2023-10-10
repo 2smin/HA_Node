@@ -26,7 +26,7 @@ public class ExternalBootstrap {
         serverBootstrap.group(httpEventLoopGroup, new NioEventLoopGroup(10));
         serverBootstrap.channel(NioServerSocketChannel.class);
         addHandlers();
-        serverBootstrap.bind(8080).sync();
+        serverBootstrap.bind(8888).sync();
     }
 
     private void addHandlers(){
@@ -54,7 +54,9 @@ public class ExternalBootstrap {
         localChannelToCore.connect(new LocalAddress(Constants.MAIN_LOCAL_BOOTSTRAP)).addListener(
                 (ChannelFutureListener) future -> {
                     if(future.isSuccess()){
-                        logger.info("connected to master");
+                        logger.info("connected to local core bootstrap");
+                    }else{
+                        logger.error("failed connect to local core bootstrap");
                     }
                 }
         );
