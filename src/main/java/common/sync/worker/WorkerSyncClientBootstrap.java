@@ -50,6 +50,7 @@ public class WorkerSyncClientBootstrap {
         workerSyncClientBootstrap = new Bootstrap();
         workerSyncClientBootstrap.group(nodeSyncEventLoopGroup);
         workerSyncClientBootstrap.channel(NioSocketChannel.class);
+        workerSyncClientBootstrap.option(ChannelOption.SO_REUSEADDR, true);
         workerSyncClientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
@@ -64,15 +65,13 @@ public class WorkerSyncClientBootstrap {
 
         InetSocketAddress masterRemoteAddress = new InetSocketAddress(System.getenv("MASTER_CONFIG_NODE_IP"), MASTER_CONFIG_NODE_SYNC_PORT);
         try{
-            ChannelFuture future = workerSyncClientBootstrap.connect(masterRemoteAddress).sync();
+            ChannelFuture future = workerSyncClientBootstrap.connect(masterRemoteAddress).syncUninterruptibly();
             if(future.isSuccess()){
                 logger.info("connected to master successfully");
                 WorkerGlobal.getInstance().registerMaster(future.channel());
             }else{
-                logger.error("failed to connect to master");
                 throw new RuntimeException("failed to connect to master");
             }
-
             connectToCore();
         }catch (Exception e){
             logger.error("failed to connect to master");

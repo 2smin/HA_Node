@@ -14,6 +14,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
+        logger.info("Initialize node type : " + Constants.NODE_TYPE);
         try{
             CoreBootstrap master = CoreBootstrap.Holder.INSTANCE;
             master.init();

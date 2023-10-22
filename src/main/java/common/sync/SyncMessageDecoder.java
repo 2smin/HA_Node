@@ -30,10 +30,17 @@ public class SyncMessageDecoder extends ByteToMessageDecoder {
             logger.error("syncMessage byteBuf readableBytes should be longer than 42bytes");
             return;
         }else{
+<<<<<<< Updated upstream
             String workerId = in.readCharSequence(16, StandardCharsets.UTF_8).toString().trim();
             String syncElement = in.readCharSequence(16, StandardCharsets.UTF_8).toString().trim();
             String action = in.readCharSequence(10, StandardCharsets.UTF_8).toString().trim();
             String actionKey = in.readCharSequence(readableByte - 42, StandardCharsets.UTF_8).toString().trim();
+=======
+            String workerId = ((String) in.readCharSequence(16, StandardCharsets.UTF_8)).trim();
+            String syncElement = ((String) in.readCharSequence(16, StandardCharsets.UTF_8)).trim();
+            String action = ((String) in.readCharSequence(10, StandardCharsets.UTF_8)).trim();
+            String actionKey = ((String) in.readCharSequence(readableByte - 42, StandardCharsets.UTF_8)).trim();
+>>>>>>> Stashed changes
 
             if(!StringUtils.isNoneEmpty(workerId, syncElement, action)){
                 logger.error("syncMessage byteBuf should have workerId, syncElement, action");

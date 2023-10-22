@@ -44,7 +44,7 @@ public class CoreBootstrap {
                     protected void initChannel(Channel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new MasterControlServerHandler());
-                        logger.info("Node initialized with master configuration server");
+                        logger.info("Node initialized as master configuration server");
                     }
                 }
         );
@@ -62,7 +62,7 @@ public class CoreBootstrap {
                     protected void initChannel(Channel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new WorkerRequestHandler());
-                        logger.info("Node initialized with worker");
+                        logger.info("Node initialized as worker");
 
                         // set Handler differently for each client (http, sync), distinguish by channelAttr ? or by port?
 

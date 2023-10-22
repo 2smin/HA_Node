@@ -47,12 +47,13 @@ public class MasterSyncServerBootstrap {
         masterSyncServerBootstrap = new ServerBootstrap();
         masterSyncServerBootstrap.group(nodeSyncEventLoopGroup);
         masterSyncServerBootstrap.channel(NioServerSocketChannel.class);
+        masterSyncServerBootstrap.option(ChannelOption.SO_REUSEADDR, true);
         masterSyncServerBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
 
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
-                logger.info("Node initialized with worker sync server : {} ", ch.remoteAddress().toString());
+                logger.info("Node initialized with worker sync server : ", ch.remoteAddress().toString());
                 pipeline.addLast(new SyncMessageEncoder());
                 pipeline.addLast(new SyncMessageDecoder());
                 pipeline.addLast(new MasterNodeSyncHandler(localChannelToCore));
