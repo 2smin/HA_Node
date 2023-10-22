@@ -23,13 +23,13 @@ public class SyncManager {
     private static Map<Constants.SyncElement, Object> syncElements = new HashMap<>();
 
     private SyncManager (){}
-
-    public static class Holder {
-        public static SyncManager instance = new SyncManager();
+    public static SyncManager instance = new SyncManager();
+    public static SyncManager getInstance(){
+        return instance;
     }
 
-    public static SyncManager getInstance(){
-        return Holder.instance;
+    public void addSyncElement(Constants.SyncElement element, Object obj){
+        syncElements.put(element, obj);
     }
 
     /**

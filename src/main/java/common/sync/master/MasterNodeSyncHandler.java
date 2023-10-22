@@ -3,6 +3,7 @@ package common.sync.master;
 import common.core.master.MasterGlobal;
 import common.enums.Constants;
 import common.sync.Action;
+import common.sync.SyncManager;
 import common.sync.SyncMessageDto;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -65,8 +66,18 @@ public class MasterNodeSyncHandler extends ChannelDuplexHandler {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         logger.info("master node sync handler received message");
 
+        SyncMessageDto syncMessageDto = (SyncMessageDto) msg;
+        Action action = syncMessageDto.getAction();
+        Constants.SyncElement syncElement = syncMessageDto.getSyncElement();
+        String workerId = syncMessageDto.getWorkerId();
 
-        localChannelToCore.writeAndFlush(msg);
+
+        logger.info("sync message from worker node : {}", workerId);
+        logger.info("action : {}", action);
+        logger.info("sync element : {}", syncElement);
+
+        //TODO : bypass all those message to other worker node, from core bootstrap
+
     }
 
     @Override

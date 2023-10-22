@@ -1,5 +1,10 @@
 package worker.bootstraps;
 
+import common.core.worker.WorkerGlobal;
+import common.enums.Constants;
+import common.sync.Action;
+import common.sync.SyncManager;
+import common.sync.SyncMessageDto;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -42,6 +47,7 @@ public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpReques
         rateLimitContainer.checkExist(apiKey);
         if(rateLimitContainer.tryConsume(apiKey, 1)) {
             ctx.fireChannelRead(msg);
+            sendSync();
         }else{
             throw new RuntimeException("rate limit exceeded");
         }
@@ -52,5 +58,14 @@ public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpReques
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error("rate limit handler exception caught");
         logger.error(cause.getMessage());
+    }
+
+    private void sendSync(){
+        SyncMessageDto syncMessageDto = new SyncMessageDto();
+        syncMessageDto.setAction(Action.ADD);
+        syncMessageDto.setWorkerId(WorkerGlobal.getInstance().getCurrentWorkerId());
+        syncMessageDto.setSyncElement(Constants.SyncElement.RATE_LIMITER);
+
+        SyncManager.getInstance().sendSyncEvent(syncMessageDto);
     }
 }
