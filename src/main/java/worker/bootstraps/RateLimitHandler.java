@@ -62,7 +62,7 @@ public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpReques
 
     private void sendSync(){
         SyncMessageDto syncMessageDto = new SyncMessageDto();
-        syncMessageDto.setAction(Action.ADD);
+        syncMessageDto.setAction(Action.UPDATE);
         syncMessageDto.setWorkerId(WorkerGlobal.getInstance().getCurrentWorkerId());
         syncMessageDto.setSyncElement(Constants.SyncElement.RATE_LIMITER);
 

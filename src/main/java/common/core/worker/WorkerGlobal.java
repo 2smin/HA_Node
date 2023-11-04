@@ -1,9 +1,12 @@
 package common.core.worker;
 
 import io.netty.channel.Channel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class WorkerGlobal {
 
+    private static Logger logger = LogManager.getLogger(WorkerGlobal.class.getName());
     private WorkerGlobal (){}
 
     public static WorkerGlobal masterGlobal = new WorkerGlobal();
@@ -20,6 +23,7 @@ public class WorkerGlobal {
      * @param workerId
      */
     public void registerWorkerId(String workerId){
+        logger.info("register worker id : " + workerId);
         this.currentWorkerId = workerId;
     }
 

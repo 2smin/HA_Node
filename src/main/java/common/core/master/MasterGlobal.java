@@ -1,11 +1,14 @@
 package common.core.master;
 
 import io.netty.channel.Channel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
 public class MasterGlobal {
 
+    private static final Logger logger = LogManager.getLogger(MasterGlobal.class.getName());
     private MasterGlobal (){}
 
     public static MasterGlobal masterGlobal = new MasterGlobal();
@@ -33,7 +36,8 @@ public class MasterGlobal {
     }
 
     public String issueWorkerId(){
-        //TODO: save to Database;
-        return UUID.randomUUID().toString();
+        String workerId = UUID.randomUUID().toString();
+        logger.info("issue worker id : " + workerId);
+        return workerId;
     }
 }

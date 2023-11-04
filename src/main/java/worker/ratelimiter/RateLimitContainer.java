@@ -63,9 +63,6 @@ public class RateLimitContainer extends Synchronizer {
     public void doSync(String actionKey, Action action) {
         try{
             switch (action){
-                case ADD:
-                    ratelimiters.put(actionKey,new Limiter(this.config));
-                    break;
                 case REGISTER:
                     ratelimiters.put(actionKey,new Limiter(this.config));
                     break;

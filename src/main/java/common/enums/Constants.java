@@ -13,8 +13,13 @@ public class Constants {
     public enum SyncElement {
         RATE_LIMITER,
         API_KEY,
-
         BOOTSTRAP;
+
+    }
+
+    public enum AuthenticationType {
+        API_KEY,
+        JWT;
 
     }
 
