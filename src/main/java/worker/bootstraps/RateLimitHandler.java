@@ -7,8 +7,7 @@ import common.sync.SyncManager;
 import common.sync.SyncMessageDto;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import worker.ratelimiter.RateLimitContainer;
@@ -46,10 +45,12 @@ public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpReques
 
         rateLimitContainer.checkExist(apiKey);
         if(rateLimitContainer.tryConsume(apiKey, 1)) {
+            logger.info("rate limit check success");
             ctx.fireChannelRead(msg);
             sendSync();
         }else{
-            throw new RuntimeException("rate limit exceeded");
+            logger.error("rate limit exceeded");
+            ctx.writeAndFlush(createResponse(msg));
         }
 
     }
@@ -67,5 +68,16 @@ public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpReques
         syncMessageDto.setSyncElement(Constants.SyncElement.RATE_LIMITER);
 
         SyncManager.getInstance().sendSyncEvent(syncMessageDto);
+    }
+
+    private FullHttpResponse createResponse(FullHttpRequest httpRequest){
+        DefaultFullHttpResponse httpResponse = new DefaultFullHttpResponse(httpRequest.protocolVersion(),
+                HttpResponseStatus.TOO_MANY_REQUESTS);
+        httpResponse.headers().set(httpRequest.headers());
+        httpResponse.content().writeBytes(
+                "{\"message\":\"too many request\"}".getBytes()
+        );
+        httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
+        return httpResponse;
     }
 }

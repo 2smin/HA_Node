@@ -55,7 +55,6 @@ public class Limiter {
     }
 
     protected boolean tryConsume(int tokens){
-        logger.info("try consume");
         return this.bucket.tryConsume(tokens);
     }
 
