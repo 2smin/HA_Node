@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.persistence.EntityManagerFactory;
 import java.util.*;
 
 public class MasterGlobal {
@@ -12,11 +13,11 @@ public class MasterGlobal {
     private MasterGlobal (){}
 
     public static MasterGlobal masterGlobal = new MasterGlobal();
-
     public static MasterGlobal getInstance(){
         return masterGlobal;
     }
 
+    public static EntityManagerFactory emf;
     private Map<String, Channel> workerChannelMap = new HashMap<>();
 
     public void addWorkerChannel(String workerId, Channel channel){

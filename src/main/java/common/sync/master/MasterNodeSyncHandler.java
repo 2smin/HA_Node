@@ -3,8 +3,8 @@ package common.sync.master;
 import common.core.master.MasterGlobal;
 import common.enums.Constants;
 import common.sync.Action;
-import common.sync.SyncManager;
 import common.sync.SyncMessageDto;
+import entity.WorkerHolder;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -31,8 +31,8 @@ public class MasterNodeSyncHandler extends ChannelDuplexHandler {
         int port = socketAddress.getPort();
 
         String workerAddress = host + ":" + port;
-        logger.info("master node sync handler channel active, worker address : ");
-        logger.info(workerAddress);
+        logger.info("master node sync handler channel active, worker address : {}", workerAddress);
+
         System.out.println(workerAddress);
 
         MasterGlobal.getInstance().addWorkerChannel(workerAddress, ctx.channel());
@@ -47,7 +47,7 @@ public class MasterNodeSyncHandler extends ChannelDuplexHandler {
 
         //TODO : check database exist ip
 
-        String workerID = MasterGlobal.getInstance().issueWorkerId();
+        String workerID = WorkerHolder.getInstance().connectWorker(workerAddress);
 
         //TODO : save workerID to database
 

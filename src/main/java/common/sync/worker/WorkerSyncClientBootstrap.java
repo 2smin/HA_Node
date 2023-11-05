@@ -5,18 +5,22 @@ import common.enums.Constants;
 import common.sync.*;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
+import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.local.LocalAddress;
 import io.netty.channel.local.LocalChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioChannelOption;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
+import java.net.SocketOption;
 
 import static common.enums.Constants.MASTER_CONFIG_NODE_SYNC_PORT;
 import static common.enums.Constants.WORKER_NODE_SYNC_PORT;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * Communication between nodes is done through this bootstrap node. <br><br>
@@ -58,20 +62,27 @@ public class WorkerSyncClientBootstrap {
                 pipeline.addLast(new WorkerNodeSyncHandler(localChannelToCore));
             }
         });
-        workerSyncClientBootstrap.localAddress(WORKER_NODE_SYNC_PORT);
+
 
         InetSocketAddress masterRemoteAddress = new InetSocketAddress(System.getenv("MASTER_CONFIG_NODE_IP"), MASTER_CONFIG_NODE_SYNC_PORT);
+        InetSocketAddress workerSocketAddress = new InetSocketAddress("localhost", WORKER_NODE_SYNC_PORT);
+
         try{
-            ChannelFuture future = workerSyncClientBootstrap.connect(masterRemoteAddress).syncUninterruptibly();
-            if(future.isSuccess()){
+            //do not sync, await connection of future until default timeout milliseconds (3000)
+            ChannelFuture future = workerSyncClientBootstrap.connect(masterRemoteAddress, workerSocketAddress);
+            boolean isConnected = future.awaitUninterruptibly(3000, MILLISECONDS);
+
+            // reuseport option should act with connection timemillisecounds
+            if(isConnected){
                 logger.info("connected to master successfully");
                 WorkerGlobal.getInstance().registerMaster(future.channel());
             }else{
-                throw new RuntimeException("failed to connect to master");
+                logger.error("future failed : {}", future.cause().getMessage());
             }
             connectToCore();
         }catch (Exception e){
-            logger.error("failed to connect to master");
+            logger.error("failed to connect to master sync server");
+            e.printStackTrace();
             logger.error(e.getMessage());
         }
 

@@ -1,4 +1,5 @@
 
+import common.core.master.MasterGlobal;
 import common.sync.SyncManager;
 import common.sync.master.MasterSyncServerBootstrap;
 import common.sync.worker.WorkerSyncClientBootstrap;
@@ -8,6 +9,9 @@ import common.enums.Constants;
 import common.core.CoreBootstrap;
 import worker.ratelimiter.RateLimitContainer;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.logging.Logger;
 
 public class Main {
@@ -21,6 +25,9 @@ public class Main {
             CoreBootstrap master = CoreBootstrap.Holder.INSTANCE;
             master.init();
             if(Constants.NODE_TYPE.equalsIgnoreCase("master")){
+
+                MasterGlobal.emf = Persistence.createEntityManagerFactory("hibernate_mysql");
+
                 master.asMasterConfigServer();
                 MasterSyncServerBootstrap.getInstance().init();
             }else{

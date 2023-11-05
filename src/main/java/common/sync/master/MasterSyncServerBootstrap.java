@@ -48,6 +48,7 @@ public class MasterSyncServerBootstrap {
         masterSyncServerBootstrap.group(nodeSyncEventLoopGroup);
         masterSyncServerBootstrap.channel(NioServerSocketChannel.class);
         masterSyncServerBootstrap.option(ChannelOption.SO_REUSEADDR, true);
+        masterSyncServerBootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);
         masterSyncServerBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
 
             @Override

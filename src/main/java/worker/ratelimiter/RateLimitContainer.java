@@ -29,7 +29,7 @@ public class RateLimitContainer extends Synchronizer {
     }
 
     static {
-        instance.addRateLimiter("testApiKey", new Limiter(new RateLimitConfig(1, TimeUnit.SECONDS, 1)));
+        instance.addRateLimiter("testApiKey", new Limiter(new RateLimitConfig(5, TimeUnit.SECONDS, 10)));
     }
 
     private RateLimitConfig config;
