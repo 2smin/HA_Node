@@ -26,7 +26,7 @@ public class ExternalBootstrap {
         serverBootstrap.group(httpEventLoopGroup, new NioEventLoopGroup(10));
         serverBootstrap.channel(NioServerSocketChannel.class);
         addHandlers();
-        serverBootstrap.bind(8888).sync();
+        serverBootstrap.bind(Constants.WORKER_HTTP_PORT).sync();
     }
 
     private void addHandlers(){

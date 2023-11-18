@@ -35,7 +35,7 @@ public class WorkerGlobal {
         this.syncBootstrapChannel = channel;
     }
 
-    public Channel getMasterChannel(){
+    public Channel getSynchronizerChannel(){
         return this.syncBootstrapChannel;
     }
 

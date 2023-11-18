@@ -2,7 +2,6 @@ package common.sync.worker;
 
 import common.core.worker.WorkerGlobal;
 import common.sync.Action;
-import common.sync.SyncManager;
 import common.sync.SyncMessageDto;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,7 +35,7 @@ public class WorkerNodeSyncHandler extends ChannelDuplexHandler {
         Action action = syncMessageDto.getAction();
         WorkerGlobal.getInstance().registerWorkerId(syncMessageDto.getWorkerId());
         if(!action.equals(Action.INITIALIZE)){
-            SyncManager.getInstance().receiveSyncEvent(syncMessageDto);
+            WorkerSyncManager.getInstance().receiveSyncEvent(syncMessageDto);
         }
 
     }

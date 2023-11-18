@@ -4,18 +4,17 @@ import common.core.worker.WorkerGlobal;
 
 public abstract class Synchronizer {
 
-    private static SyncManager syncManager = SyncManager.getInstance();
 
-    public abstract void doSync(String actionKey, Action action);
 
     /**
-     * Create a sync message and send it to master
+     * Receive an event from master and do proper action
+     * @param actionKey
+     * @param action
      */
-    public void sendEvent(String actionKey, Action action){
-        SyncMessageDto messageDto = new SyncMessageDto();
-        messageDto.setAction(action);
-        messageDto.setActionKey(actionKey);
-        messageDto.setWorkerId(WorkerGlobal.getInstance().getCurrentWorkerId());
-        syncManager.sendSyncEvent(messageDto);
-    }
+    public abstract void receiveEvent(String actionKey, Action action);
+
+    /**
+     * Create an event and send it to master
+     */
+    public abstract void sendEvent(String actionKey, Action action);
 }

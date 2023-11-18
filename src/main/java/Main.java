@@ -1,6 +1,7 @@
 
 import common.core.master.MasterGlobal;
-import common.sync.SyncManager;
+import common.sync.worker.WorkerSyncManager;
+import common.sync.master.K8SAPIServerConnector;
 import common.sync.master.MasterSyncServerBootstrap;
 import common.sync.worker.WorkerSyncClientBootstrap;
 import worker.bootstraps.ExternalBootstrap;
@@ -9,8 +10,6 @@ import common.enums.Constants;
 import common.core.CoreBootstrap;
 import worker.ratelimiter.RateLimitContainer;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.logging.Logger;
 
@@ -30,6 +29,11 @@ public class Main {
 
                 master.asMasterConfigServer();
                 MasterSyncServerBootstrap.getInstance().init();
+
+                K8SAPIServerConnector.MasterSyncManager masterSyncManager = K8SAPIServerConnector.MasterSyncManager.getInstance();
+                masterSyncManager.addSyncElement(
+                        Constants.SyncElement.RATE_LIMITER, RateLimitContainer.getInstance()
+                );
             }else{
                 master.asWorkerNode();
                 WorkerSyncClientBootstrap.getInstance().init();
@@ -39,20 +43,16 @@ public class Main {
                 externalBootstrap.initBootstrap();
                 externalBootstrap.connectToCore();
 
+                WorkerSyncManager workerSyncManager = WorkerSyncManager.getInstance();
+                workerSyncManager.addSyncElement(
+                        Constants.SyncElement.RATE_LIMITER, RateLimitContainer.getInstance()
+                );
             }
-            initSynchronizer();
+
         }catch (InterruptedException e){
             e.printStackTrace();
             logger.severe("error occurred while initializing master and httpBootstraps");
         }
 
-    }
-
-
-    private static void initSynchronizer(){
-        SyncManager syncManager = SyncManager.getInstance();
-        syncManager.addSyncElement(
-                Constants.SyncElement.RATE_LIMITER, RateLimitContainer.getInstance()
-        );
     }
 }

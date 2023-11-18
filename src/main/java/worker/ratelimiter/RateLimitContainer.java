@@ -1,5 +1,8 @@
 package worker.ratelimiter;
 
+import common.core.worker.WorkerGlobal;
+import common.enums.Constants;
+import common.sync.SyncMessageDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import common.sync.Action;
@@ -60,7 +63,7 @@ public class RateLimitContainer extends Synchronizer {
     }
 
     @Override
-    public void doSync(String actionKey, Action action) {
+    public void receiveEvent(String actionKey, Action action) {
         try{
             switch (action){
                 case REGISTER:
@@ -76,5 +79,17 @@ public class RateLimitContainer extends Synchronizer {
         }catch (Exception e){
             throw new RuntimeException("node sync failed");
         }
+    }
+
+    @Override
+    public void sendEvent(String actionKey, Action action) {
+
+        SyncMessageDto messageDto = new SyncMessageDto();
+        messageDto.setAction(action);
+        messageDto.setSyncElement(Constants.SyncElement.RATE_LIMITER);
+        messageDto.setActionKey(actionKey);
+        messageDto.setWorkerId(WorkerGlobal.getInstance().getCurrentWorkerId());
+
+        WorkerGlobal.getInstance().getSynchronizerChannel().writeAndFlush(messageDto);
     }
 }

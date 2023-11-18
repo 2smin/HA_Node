@@ -69,7 +69,7 @@ public class WorkerSyncClientBootstrap {
 
         try{
             //do not sync, await connection of future until default timeout milliseconds (3000)
-            ChannelFuture future = workerSyncClientBootstrap.connect(masterRemoteAddress, workerSocketAddress);
+            ChannelFuture future = workerSyncClientBootstrap.connect(masterRemoteAddress);
             boolean isConnected = future.awaitUninterruptibly(3000, MILLISECONDS);
 
             // reuseport option should act with connection timemillisecounds

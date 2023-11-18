@@ -23,7 +23,7 @@ public class ApiKeyAuthenticator extends Synchronizer implements Authenticator{
     }
 
     @Override
-    public void doSync(String actionKey, Action action) {
+    public void receiveEvent(String actionKey, Action action) {
         switch (action.toString()){
             case "REGISTER":
                 apiKeys.add(actionKey);
@@ -32,5 +32,10 @@ public class ApiKeyAuthenticator extends Synchronizer implements Authenticator{
                 apiKeys.remove(actionKey);
                 break;
         }
+    }
+
+    @Override
+    public void sendEvent(String actionKey, Action action) {
+
     }
 }

@@ -4,7 +4,7 @@ import common.core.master.MasterGlobal;
 import common.enums.Constants;
 import common.sync.Action;
 import common.sync.SyncMessageDto;
-import entity.WorkerHolder;
+import common.db.WorkerService;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -36,20 +36,7 @@ public class MasterNodeSyncHandler extends ChannelDuplexHandler {
         System.out.println(workerAddress);
 
         MasterGlobal.getInstance().addWorkerChannel(workerAddress, ctx.channel());
-
-        InetSocketAddress inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-        //check database in case of already connected node or not
-        /*
-        1. if already connected node, regenerate uuid
-        2. if new node, generate uuid
-        3. in all case, check api key, (api key or auth key contains in k8s.yaml)
-         */
-
-        //TODO : check database exist ip
-
-        String workerID = WorkerHolder.getInstance().connectWorker(workerAddress);
-
-        //TODO : save workerID to database
+        String workerID = WorkerService.getInstance().addWorkerToDatabase(workerAddress);
 
         SyncMessageDto syncMessageDto = new SyncMessageDto();
         syncMessageDto.setAction(Action.INITIALIZE);
@@ -71,17 +58,18 @@ public class MasterNodeSyncHandler extends ChannelDuplexHandler {
         Constants.SyncElement syncElement = syncMessageDto.getSyncElement();
         String workerId = syncMessageDto.getWorkerId();
 
-
         logger.info("sync message from worker node : {}", workerId);
         logger.info("action : {}", action);
         logger.info("sync element : {}", syncElement);
 
         //TODO : bypass all those message to other worker node, from core bootstrap
+        K8SAPIServerConnector.MasterSyncManager.getInstance().receiveEvent(syncMessageDto);
 
     }
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        super.write(ctx, msg, promise);
+        logger.info("master node sync handler write message");
+        ctx.writeAndFlush(msg);
     }
 }

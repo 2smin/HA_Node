@@ -1,10 +1,6 @@
 package worker.bootstraps;
 
-import common.core.worker.WorkerGlobal;
-import common.enums.Constants;
 import common.sync.Action;
-import common.sync.SyncManager;
-import common.sync.SyncMessageDto;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
@@ -47,7 +43,7 @@ public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpReques
         if(rateLimitContainer.tryConsume(apiKey, 1)) {
             logger.info("rate limit check success");
             ctx.fireChannelRead(msg);
-            sendSync();
+            rateLimitContainer.sendEvent(apiKey, Action.UPDATE);
         }else{
             logger.error("rate limit exceeded");
             ctx.writeAndFlush(createResponse(msg));
@@ -61,14 +57,14 @@ public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpReques
         logger.error(cause.getMessage());
     }
 
-    private void sendSync(){
-        SyncMessageDto syncMessageDto = new SyncMessageDto();
-        syncMessageDto.setAction(Action.UPDATE);
-        syncMessageDto.setWorkerId(WorkerGlobal.getInstance().getCurrentWorkerId());
-        syncMessageDto.setSyncElement(Constants.SyncElement.RATE_LIMITER);
-
-        SyncManager.getInstance().sendSyncEvent(syncMessageDto);
-    }
+//    private void sendSync(){
+//        SyncMessageDto syncMessageDto = new SyncMessageDto();
+//        syncMessageDto.setAction(Action.UPDATE);
+//        syncMessageDto.setWorkerId(WorkerGlobal.getInstance().getCurrentWorkerId());
+//        syncMessageDto.setSyncElement(Constants.SyncElement.RATE_LIMITER);
+//
+//        WorkerSyncManager.getInstance().sendSyncEvent(syncMessageDto);
+//    }
 
     private FullHttpResponse createResponse(FullHttpRequest httpRequest){
         DefaultFullHttpResponse httpResponse = new DefaultFullHttpResponse(httpRequest.protocolVersion(),

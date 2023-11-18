@@ -1,40 +1,28 @@
-package entity;
+package common.db;
 
 import common.core.master.MasterGlobal;
+import entity.Worker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import java.util.HashMap;
-import java.util.Map;
 
-public class WorkerHolder {
+public class WorkerService {
 
-    private static Logger logger = LogManager.getLogger(WorkerHolder.class.getName());
-    private WorkerHolder(){}
+    private static Logger logger = LogManager.getLogger(WorkerService.class.getName());
+    private WorkerService(){}
 
     private static class WorkerHolderInstance{
-        private static final WorkerHolder workerHolder = new WorkerHolder();
+        private static final WorkerService MW_CONNECTION_MANAGER = new WorkerService();
     }
 
-    public static WorkerHolder getInstance(){
-        return WorkerHolderInstance.workerHolder;
+    public static WorkerService getInstance(){
+        return WorkerHolderInstance.MW_CONNECTION_MANAGER;
     }
-
-    private Map<String,String> workerMap = new HashMap<>();
 
     //TODO : how to handler reconnected worker?
-    public boolean checkExist(String ip){
-        //check in db
-        return false;
-    }
-
-    public void reconnectWorker(String workerId, String ip){
-        logger.info("reconnect worker : " + workerId + " ip : " + ip);
-
-    }
-    public String connectWorker(String ip){
+    public String addWorkerToDatabase(String ip){
 
         String id = issueNewWorkerId();
 
@@ -50,23 +38,12 @@ public class WorkerHolder {
             etx.commit();
             em.close();
 
-            workerMap.put(id, ip);
-
             return id;
         }catch (Exception e){
             e.printStackTrace();
         }
         return null;
     }
-
-    public String getWorkerIp(String workerId){
-        return workerMap.get(workerId);
-    }
-
-    public void removeWorker(String workerId){
-        workerMap.remove(workerId);
-    }
-
     public String issueNewWorkerId(){
         String workerId = java.util.UUID.randomUUID().toString().substring(0,10);
         logger.info("issue new worker id : " + workerId);

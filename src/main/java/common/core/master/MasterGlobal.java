@@ -28,8 +28,12 @@ public class MasterGlobal {
         workerChannelMap.get(workerId);
     }
 
-    public List<Channel> getAllWorkerChannel(){
-        return (List<Channel>) workerChannelMap.values();
+    public ArrayList<Channel> getAllWorkerChannel(){
+        ArrayList<Channel> channelList = new ArrayList<>();
+       for(Map.Entry<String, Channel> entry : workerChannelMap.entrySet()){
+           channelList.add(entry.getValue());
+       }
+       return channelList;
     }
 
     public Set<Map.Entry<String, Channel>> getEntries(){

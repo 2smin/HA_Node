@@ -1,8 +1,11 @@
-package common.sync;
+package common.sync.worker;
 
 import common.core.master.MasterGlobal;
 import common.core.worker.WorkerGlobal;
 import common.enums.Constants;
+import common.sync.Action;
+import common.sync.SyncMessageDto;
+import common.sync.Synchronizer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -11,20 +14,20 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
-public class SyncManager {
+public class WorkerSyncManager {
 
     /*
     worker : send event
     master : receive event
      */
 
-    private static Logger logger = LogManager.getLogger(SyncManager.class.getName());
+    private static Logger logger = LogManager.getLogger(WorkerSyncManager.class.getName());
 
     private static Map<Constants.SyncElement, Object> syncElements = new HashMap<>();
 
-    private SyncManager (){}
-    public static SyncManager instance = new SyncManager();
-    public static SyncManager getInstance(){
+    private WorkerSyncManager(){}
+    public static WorkerSyncManager instance = new WorkerSyncManager();
+    public static WorkerSyncManager getInstance(){
         return instance;
     }
 
@@ -81,7 +84,7 @@ public class SyncManager {
      * @param message sync messageDto
      */
     public void receiveSyncEvent(SyncMessageDto message){
-
+        logger.info("receive sync event from master server");
         Action action = message.getAction();
         String actionKey = message.getActionKey();
         Constants.SyncElement element = message.getSyncElement();
@@ -90,7 +93,7 @@ public class SyncManager {
             throw new UnsupportedOperationException("This element is not supported in this version");
 
         Synchronizer syncElement = (Synchronizer) syncElements.get(element);
-        syncElement.doSync(actionKey, action);
+        syncElement.receiveEvent(actionKey, action);
     }
 
     /**
@@ -98,7 +101,7 @@ public class SyncManager {
      * This method only used by worker node
      */
     public void sendSyncEvent(SyncMessageDto message){
-        WorkerGlobal.getInstance().getMasterChannel().writeAndFlush(message);
+        WorkerGlobal.getInstance().getSynchronizerChannel().writeAndFlush(message);
     }
 
 }
