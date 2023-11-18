@@ -36,6 +36,15 @@ public class MasterGlobal {
        return channelList;
     }
 
+    public ArrayList<Channel> getAllWorkerChannelExcept(String workerId){
+        ArrayList<Channel> channelList = new ArrayList<>();
+        for(Map.Entry<String, Channel> entry : workerChannelMap.entrySet()){
+            if(entry.getKey().equals(workerId)) continue;
+            channelList.add(entry.getValue());
+        }
+        return channelList;
+    }
+
     public Set<Map.Entry<String, Channel>> getEntries(){
         return workerChannelMap.entrySet();
     }

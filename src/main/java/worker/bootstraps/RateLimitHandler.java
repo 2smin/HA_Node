@@ -1,15 +1,18 @@
 package worker.bootstraps;
 
 import common.sync.Action;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
+import io.netty.util.ReferenceCountUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import worker.ratelimiter.RateLimitContainer;
 
 
-public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class RateLimitHandler extends ChannelInboundHandlerAdapter {
 
     private static Logger logger = LogManager.getLogger(RateLimitHandler.class.getName());
     private RateLimitContainer rateLimitContainer = RateLimitContainer.getInstance();
@@ -29,11 +32,12 @@ public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpReques
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
         logger.info("rate limit handler read httpRequest");
 
-        HttpHeaders requestHeaders = msg.headers();
+        FullHttpRequest httpRequest = (FullHttpRequest) msg;
+        HttpHeaders requestHeaders = httpRequest.headers();
 
         //TODO : check apiKey header exist at front of pipeline (ex. auth handler)
         if(!requestHeaders.contains("apiKey")) throw new RuntimeException("apiKey header not found");
@@ -42,20 +46,21 @@ public class RateLimitHandler extends SimpleChannelInboundHandler<FullHttpReques
         rateLimitContainer.checkExist(apiKey);
         if(rateLimitContainer.tryConsume(apiKey, 1)) {
             logger.info("rate limit check success");
-            ctx.fireChannelRead(msg);
             rateLimitContainer.sendEvent(apiKey, Action.UPDATE);
+            ctx.fireChannelRead(httpRequest);
         }else{
             logger.error("rate limit exceeded");
-            ctx.writeAndFlush(createResponse(msg));
+            ctx.writeAndFlush(createResponse(httpRequest));
         }
 
     }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("rate limit handler exception caught");
-        logger.error(cause.getMessage());
-    }
+//
+//    @Override
+//    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+//        logger.error("rate limit handler exception caught");
+//        cause.printStackTrace();
+//        logger.error(cause.getMessage());
+//    }
 
 //    private void sendSync(){
 //        SyncMessageDto syncMessageDto = new SyncMessageDto();

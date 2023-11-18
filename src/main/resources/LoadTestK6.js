@@ -7,13 +7,13 @@ export default function () {
         headers: {
             'Content-Type': 'application/json',
             'User-Agent': 'k6',
-            'apiKey' : "aaabbb"
+            'apiKey' : "testApiKey"
         },
         http1: true, // HTTP 1.1 프로토콜 사용
     };
 
     for (let i = 0; i < 10; i++) {
-        const httpRes = http.get('http://localhost:8888/', params);
+        const httpRes = http.get('http://localhost:8111/', params);
         count++;
         console.log("count : " + count + " res : " + httpRes.body);
         sleep(0.01); // 0.1초(100밀리초) 대기

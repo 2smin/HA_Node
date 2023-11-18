@@ -33,8 +33,10 @@ public class WorkerNodeSyncHandler extends ChannelDuplexHandler {
 
         SyncMessageDto syncMessageDto = (SyncMessageDto) msg;
         Action action = syncMessageDto.getAction();
-        WorkerGlobal.getInstance().registerWorkerId(syncMessageDto.getWorkerId());
-        if(!action.equals(Action.INITIALIZE)){
+
+        if(action.equals(Action.INITIALIZE)){
+            WorkerGlobal.getInstance().registerWorkerId(syncMessageDto.getWorkerId());
+        }else{
             WorkerSyncManager.getInstance().receiveSyncEvent(syncMessageDto);
         }
 

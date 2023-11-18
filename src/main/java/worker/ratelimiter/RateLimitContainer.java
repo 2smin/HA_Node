@@ -77,6 +77,8 @@ public class RateLimitContainer extends Synchronizer {
                     break;
             }
         }catch (Exception e){
+            logger.error(e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("node sync failed");
         }
     }
@@ -84,12 +86,18 @@ public class RateLimitContainer extends Synchronizer {
     @Override
     public void sendEvent(String actionKey, Action action) {
 
-        SyncMessageDto messageDto = new SyncMessageDto();
-        messageDto.setAction(action);
-        messageDto.setSyncElement(Constants.SyncElement.RATE_LIMITER);
-        messageDto.setActionKey(actionKey);
-        messageDto.setWorkerId(WorkerGlobal.getInstance().getCurrentWorkerId());
+        try{
+            SyncMessageDto messageDto = new SyncMessageDto();
+            messageDto.setAction(action);
+            messageDto.setSyncElement(Constants.SyncElement.RATE_LIMITER);
+            messageDto.setActionKey(actionKey);
+            messageDto.setWorkerId(WorkerGlobal.getInstance().getCurrentWorkerId());
 
-        WorkerGlobal.getInstance().getSynchronizerChannel().writeAndFlush(messageDto);
+            WorkerGlobal.getInstance().getSynchronizerChannel().writeAndFlush(messageDto);
+
+        }catch (Exception e){
+            logger.error("un error occurred while sending sync event");
+            logger.error(e.getMessage());
+        }
     }
 }

@@ -24,8 +24,6 @@ public class SimpleHttpRequestHandler extends SimpleChannelInboundHandler<FullHt
         //TODO simpley send httpRequest to masterEventManagerChannel
         logger.info("simple http request received...");
 
-        localChannelToCore.writeAndFlush(msg);
-
         //Simple httpResponse
         FullHttpResponse httpResponse = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);

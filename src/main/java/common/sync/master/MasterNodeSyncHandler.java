@@ -35,8 +35,8 @@ public class MasterNodeSyncHandler extends ChannelDuplexHandler {
 
         System.out.println(workerAddress);
 
-        MasterGlobal.getInstance().addWorkerChannel(workerAddress, ctx.channel());
         String workerID = WorkerService.getInstance().addWorkerToDatabase(workerAddress);
+        MasterGlobal.getInstance().addWorkerChannel(workerID, ctx.channel());
 
         SyncMessageDto syncMessageDto = new SyncMessageDto();
         syncMessageDto.setAction(Action.INITIALIZE);
@@ -63,7 +63,7 @@ public class MasterNodeSyncHandler extends ChannelDuplexHandler {
         logger.info("sync element : {}", syncElement);
 
         //TODO : bypass all those message to other worker node, from core bootstrap
-        K8SAPIServerConnector.MasterSyncManager.getInstance().receiveEvent(syncMessageDto);
+        MasterSyncManager.getInstance().receiveEvent(syncMessageDto);
 
     }
 

@@ -1,5 +1,6 @@
 
 import common.core.master.MasterGlobal;
+import common.sync.master.MasterSyncManager;
 import common.sync.worker.WorkerSyncManager;
 import common.sync.master.K8SAPIServerConnector;
 import common.sync.master.MasterSyncServerBootstrap;
@@ -30,7 +31,7 @@ public class Main {
                 master.asMasterConfigServer();
                 MasterSyncServerBootstrap.getInstance().init();
 
-                K8SAPIServerConnector.MasterSyncManager masterSyncManager = K8SAPIServerConnector.MasterSyncManager.getInstance();
+                MasterSyncManager masterSyncManager = MasterSyncManager.getInstance();
                 masterSyncManager.addSyncElement(
                         Constants.SyncElement.RATE_LIMITER, RateLimitContainer.getInstance()
                 );
