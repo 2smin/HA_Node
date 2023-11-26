@@ -43,7 +43,7 @@ public class MasterSyncServerBootstrap {
     private LocalChannel localChannelToCore;
 
     public void init() throws InterruptedException{
-        nodeSyncEventLoopGroup = new NioEventLoopGroup(1);
+        nodeSyncEventLoopGroup = MasterGlobal.masterLoop;
         masterSyncServerBootstrap = new ServerBootstrap();
         masterSyncServerBootstrap.group(nodeSyncEventLoopGroup);
         masterSyncServerBootstrap.channel(NioServerSocketChannel.class);
@@ -58,29 +58,11 @@ public class MasterSyncServerBootstrap {
                 pipeline.addLast(new SyncMessageEncoder());
                 pipeline.addLast(new SyncMessageDecoder());
                 pipeline.addLast(new MasterNodeSyncHandler(localChannelToCore));
-
             }
         });
         masterSyncServerBootstrap.bind(MASTER_CONFIG_NODE_SYNC_PORT).sync();
 
-        connectToCore();
-
     }
 
-    public void connectToCore(){
-        this.localChannelToCore = new LocalChannel();
-        nodeSyncEventLoopGroup.register(localChannelToCore);
-        localChannelToCore.connect(new LocalAddress(Constants.MAIN_LOCAL_BOOTSTRAP)).addListener(
-                (ChannelFutureListener) future -> {
-                    if(future.isSuccess()){
-                        logger.info("connected to core");
-                    }
-
-                    SyncMessageDto syncMessageDto = new SyncMessageDto();
-                    syncMessageDto.setAction(Action.INITIALIZE);
-                    future.channel().writeAndFlush(syncMessageDto);
-                }
-        );
-    }
 
 }

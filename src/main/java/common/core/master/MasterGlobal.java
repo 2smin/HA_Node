@@ -1,6 +1,9 @@
 package common.core.master;
 
+import com.google.gson.Gson;
 import io.netty.channel.Channel;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,6 +14,10 @@ public class MasterGlobal {
 
     private static final Logger logger = LogManager.getLogger(MasterGlobal.class.getName());
     private MasterGlobal (){}
+
+    public static EventLoopGroup masterLoop = new NioEventLoopGroup(1);
+
+    public static Gson gson = new Gson();
 
     public static MasterGlobal masterGlobal = new MasterGlobal();
     public static MasterGlobal getInstance(){

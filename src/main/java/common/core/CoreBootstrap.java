@@ -1,6 +1,7 @@
 package common.core;
 
 import common.core.master.MasterControlServerHandler;
+import common.core.master.MasterGlobal;
 import common.core.worker.WorkerRequestHandler;
 import common.enums.Constants;
 import io.netty.bootstrap.ServerBootstrap;
@@ -9,8 +10,14 @@ import io.netty.channel.local.LocalAddress;
 import io.netty.channel.local.LocalChannel;
 import io.netty.channel.local.LocalServerChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpContentCompressor;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.net.InetSocketAddress;
 
 public class CoreBootstrap {
 
@@ -27,10 +34,10 @@ public class CoreBootstrap {
     private ServerBootstrap masterServerBootstrap;
     private LocalChannel masterLocalChannel;
     public void init() throws InterruptedException{
-        masterEventLoopGroup = new NioEventLoopGroup(10);
+        masterEventLoopGroup = MasterGlobal.masterLoop;
         masterServerBootstrap = new ServerBootstrap();
         masterServerBootstrap.group(masterEventLoopGroup);
-        masterServerBootstrap.channel(LocalServerChannel.class);
+        masterServerBootstrap.channel(NioServerSocketChannel.class);
     }
 
     /**
@@ -43,6 +50,9 @@ public class CoreBootstrap {
                     @Override
                     protected void initChannel(Channel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
+                        pipeline.addLast(new HttpServerCodec());
+                        pipeline.addLast(new HttpObjectAggregator(65536));
+                        pipeline.addLast(new HttpContentCompressor());
                         pipeline.addLast(new MasterControlServerHandler());
                         logger.info("Node initialized as master configuration server");
                     }
@@ -75,7 +85,7 @@ public class CoreBootstrap {
 
     private void bind() {
         try{
-            masterServerBootstrap.bind(new LocalAddress(Constants.MAIN_LOCAL_BOOTSTRAP)).sync();
+            masterServerBootstrap.bind(8000).sync();
         }catch (InterruptedException e){
             logger.error("Error while binding master configuration server", e);
             throw new RuntimeException(e);

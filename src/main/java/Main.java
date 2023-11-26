@@ -36,7 +36,9 @@ public class Main {
                         Constants.SyncElement.RATE_LIMITER, RateLimitContainer.getInstance()
                 );
             }else{
-                master.asWorkerNode();
+
+                //FIXME : remove coreBootstraps on worker node ????
+//                master.asWorkerNode();
                 WorkerSyncClientBootstrap.getInstance().init();
 
                 //TODO : init bootstrapManager to manage all bootstraps, and put boot in to manager

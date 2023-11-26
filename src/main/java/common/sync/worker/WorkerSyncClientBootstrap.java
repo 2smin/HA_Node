@@ -79,7 +79,7 @@ public class WorkerSyncClientBootstrap {
             }else{
                 logger.error("future failed : {}", future.cause().getMessage());
             }
-            connectToCore();
+//            connectToCore();
         }catch (Exception e){
             logger.error("failed to connect to master sync server");
             e.printStackTrace();
