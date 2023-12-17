@@ -1,12 +1,9 @@
 package worker.bootstraps;
 
 import common.sync.Action;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
-import io.netty.util.ReferenceCountUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import worker.ratelimiter.RateLimitContainer;
@@ -43,8 +40,7 @@ public class RateLimitHandler extends ChannelInboundHandlerAdapter {
         if(!requestHeaders.contains("apiKey")) throw new RuntimeException("apiKey header not found");
         String apiKey = requestHeaders.get("apiKey");
 
-        rateLimitContainer.checkExist(apiKey);
-        if(rateLimitContainer.tryConsume(apiKey, 1)) {
+        if(rateLimitContainer.doLimit(apiKey)){
             logger.info("rate limit check success");
             rateLimitContainer.sendEvent(apiKey, Action.UPDATE);
             ctx.fireChannelRead(httpRequest);

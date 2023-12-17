@@ -32,6 +32,7 @@ public class RateLimitContainer extends Synchronizer {
     }
 
     static {
+        logger.info("initialize latelimiter");
         instance.addRateLimiter("testApiKey", new Limiter(new RateLimitConfig(5, TimeUnit.SECONDS, 10)));
     }
 
@@ -46,20 +47,30 @@ public class RateLimitContainer extends Synchronizer {
         this.config = config;
     }
 
-    public void checkExist(String apiKey) {
+    public boolean doLimit(String apiKey) {
         Objects.requireNonNull(apiKey, "apiKey cannot be null");
         if(ratelimiters.containsKey(apiKey)){
-            return;
+            logger.info("found existing ratelimiter :" + apiKey);
+            return tryConsume(apiKey,1);
         }else{
             logger.info("create new ratelimiter : " + apiKey);
-            if(config==null) config = new RateLimitConfig(10, TimeUnit.SECONDS,10);
-            Limiter limiter = new Limiter(config);
-            ratelimiters.put(apiKey,limiter);
+            register(apiKey);
+            return tryConsume(apiKey,1);
         }
     }
 
-    public boolean tryConsume(String apiKey, int num){
+    private boolean tryConsume(String apiKey, int num){
         return ratelimiters.get(apiKey).tryConsume(num);
+    }
+
+    private void register(String apiKey){
+        if(config==null) config = new RateLimitConfig(10, TimeUnit.SECONDS,10);
+        Limiter limiter = new Limiter(config);
+        ratelimiters.put(apiKey,limiter);
+    }
+
+    private void unregister(String apiKey){
+        ratelimiters.remove(apiKey);
     }
 
     @Override
@@ -67,13 +78,13 @@ public class RateLimitContainer extends Synchronizer {
         try{
             switch (action){
                 case REGISTER:
-                    ratelimiters.put(actionKey,new Limiter(this.config));
+                    register(actionKey);
                     break;
                 case UNREGISTER:
-                    ratelimiters.remove(actionKey);
+                    unregister(actionKey);
                     break;
                 case UPDATE:
-                    ratelimiters.get(actionKey).tryConsume(1);
+                    doLimit(actionKey);
                     break;
             }
         }catch (Exception e){
